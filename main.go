@@ -31,6 +31,7 @@ type Model struct {
     selected  int
     showHelp  bool
     mu        sync.Mutex
+    cfg       *Config
 }
 
 var (
@@ -40,8 +41,32 @@ var (
 
 type statusMsg []MachineStatus
 
+var debugLogFile *os.File
+
+func init() {
+    var err error
+    debugLogFile, err = os.OpenFile("lazyos.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+    if err != nil {
+        debugLogFile = os.Stderr
+    }
+}
+
+func (m *Model) fetchStatusesCmd() tea.Cmd {
+    var first = true
+    return func() tea.Msg {
+        if first {
+            first = false
+            statuses := fetchMachineStatus(m.cfg)
+            return statusMsg(statuses)
+        }
+        time.Sleep(5 * time.Second)
+        statuses := fetchMachineStatus(m.cfg)
+        return statusMsg(statuses)
+    }
+}
+
 func (m *Model) Init() tea.Cmd {
-    return fetchStatusesCmd
+    return m.fetchStatusesCmd()
 }
 
 func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -73,13 +98,14 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
             return m, tea.Quit
         }
     case tea.WindowSizeMsg:
-    m.width = msg.Width
-    m.height = msg.Height
+        m.width = msg.Width
+        m.height = msg.Height
     case statusMsg:
-    m.mu.Lock()
-    m.machines = msg
-    m.mu.Unlock()
-    return m, fetchStatusesCmd
+        fmt.Fprintf(debugLogFile, "Update: received statusMsg len=%d\n", len(msg))
+        m.mu.Lock()
+        m.machines = msg
+        m.mu.Unlock()
+        return m, m.fetchStatusesCmd()
     }
     return m, nil
 }
@@ -162,9 +188,11 @@ func (m *Model) View() string {
 }
 
 func fetchMachineStatus(cfg *Config) []MachineStatus {
+    fmt.Fprintf(debugLogFile, "fetchMachineStatus: cfg.Machines len=%d\n", len(cfg.Machines))
     statuses := make([]MachineStatus, len(cfg.Machines))
     var wg sync.WaitGroup
     for i, m := range cfg.Machines {
+        fmt.Fprintf(debugLogFile, "fetchMachineStatus: machine[%d]=%+v\n", i, m)
         wg.Add(1)
         go func(idx int, mach Machine) {
             defer wg.Done()
@@ -183,17 +211,8 @@ func fetchMachineStatus(cfg *Config) []MachineStatus {
         }(i, m)
     }
     wg.Wait()
+    fmt.Fprintf(debugLogFile, "fetchMachineStatus: statuses len=%d\n", len(statuses))
     return statuses
-}
-
-func fetchStatusesCmd() tea.Msg {
-    cfg, err := LoadConfig("config.yml")
-    if err != nil {
-        return statusMsg([]MachineStatus{})
-    }
-    statuses := fetchMachineStatus(cfg)
-    time.Sleep(5 * time.Second)
-    return statusMsg(statuses)
 }
 
 func main() {
@@ -202,11 +221,8 @@ func main() {
         fmt.Println("Failed to load config:", err)
         os.Exit(1)
     }
-    statuses := fetchMachineStatus(cfg)
-    model := &Model{
-        machines: statuses,
-    }
-    p := tea.NewProgram(model)
+    model := &Model{cfg: cfg}
+    p := tea.NewProgram(model, tea.WithAltScreen())
     _, err = p.Run()
     if err != nil {
         fmt.Println("Error running program:", err)

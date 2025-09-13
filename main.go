@@ -1,14 +1,16 @@
 package main
 
 import (
-    "fmt"
-    "os"
+	"fmt"
+	"os"
+	"sync"
+	"time"
 
-    tea "github.com/charmbracelet/bubbletea"
-    "github.com/charmbracelet/lipgloss"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
-type OSInfo struct {
+type MachineStatus struct {
     Hostname string
     Chassis  string
     OS       string
@@ -18,15 +20,17 @@ type OSInfo struct {
     Display  string
     Uptime   string
     Location string
+
     Status   string
 }
 
 type Model struct {
     width     int
     height    int
-    osList    []OSInfo
+    machines  []MachineStatus
     selected  int
     showHelp  bool
+    mu        sync.Mutex
 }
 
 var (
@@ -34,11 +38,13 @@ var (
     borderStyle = lipgloss.NewStyle().Border(lipgloss.NormalBorder()).BorderForeground(lipgloss.Color("8")).Padding(1, 2)
 )
 
-func (m Model) Init() tea.Cmd {
-    return nil
+type statusMsg []MachineStatus
+
+func (m *Model) Init() tea.Cmd {
+    return fetchStatusesCmd
 }
 
-func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     switch msg := msg.(type) {
     case tea.KeyMsg:
         switch msg.String() {
@@ -54,21 +60,26 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
             }
             return m, nil
         case "down":
-            if !m.showHelp && m.selected < len(m.osList)-1 {
+            if !m.showHelp && m.selected < len(m.machines)-1 {
                 m.selected++
             }
             return m, nil
         case "enter":
             if !m.showHelp {
-                // Could add logic for selecting an OS
+                // TODO: logic to select an os
             }
             return m, nil
         case "q", "ctrl+c":
             return m, tea.Quit
         }
     case tea.WindowSizeMsg:
-        m.width = msg.Width
-        m.height = msg.Height
+    m.width = msg.Width
+    m.height = msg.Height
+    case statusMsg:
+    m.mu.Lock()
+    m.machines = msg
+    m.mu.Unlock()
+    return m, fetchStatusesCmd
     }
     return m, nil
 }
@@ -80,7 +91,7 @@ func truncate(s string, max int) string {
     return s
 }
 
-func (m Model) View() string {
+func (m *Model) View() string {
     title := titleStyle.Render(" lazyos ")
 
     if m.showHelp {
@@ -99,10 +110,7 @@ func (m Model) View() string {
         return borderStyle.Width(m.width).Height(m.height).Render(helpContent)
     }
 
-    // Column widths
     colWidths := []int{15, 10, 15, 15, 15, 10, 12, 10, 10, 10}
-
-    // Column headers
     headers := []string{"Hostname", "Chassis", "OS", "Kernel", "GPU", "Memory", "Display", "Uptime", "Location", "Status"}
     for i, h := range headers {
         headers[i] = truncate(h, colWidths[i])
@@ -112,7 +120,7 @@ func (m Model) View() string {
 
     var rows []string
     rows = append(rows, lipgloss.NewStyle().Bold(true).Underline(true).Render(header))
-    for i, os := range m.osList {
+    for i, os := range m.machines {
         var statusColor lipgloss.Style
         switch os.Status {
         case "Online":
@@ -153,50 +161,55 @@ func (m Model) View() string {
     return border
 }
 
-func main() {
-    model := Model{
-        osList: []OSInfo{
-            {
-                Hostname: "ubuntu-server",
-                Chassis:  "Tower",
-                OS:       "Ubuntu 22.04",
-                Kernel:   "5.15.0-84-generic",
-                GPU:      "NVIDIA GTX 1080",
+func fetchMachineStatus(cfg *Config) []MachineStatus {
+    statuses := make([]MachineStatus, len(cfg.Machines))
+    var wg sync.WaitGroup
+    for i, m := range cfg.Machines {
+        wg.Add(1)
+        go func(idx int, mach Machine) {
+            defer wg.Done()
+            statuses[idx] = MachineStatus{
+                Hostname: mach.Hostname,
+                Chassis:  "Laptop",
+                OS:       "Linux",
+                Kernel:   "5.15.0",
+                GPU:      "Intel UHD",
                 Memory:   "16GB",
                 Display:  "1920x1080",
-                Uptime:   "3 days",
-                Location: "Lab",
+                Uptime:   "2 days",
+                Location: "Toronto",
                 Status:   "Online",
-            },
-            {
-                Hostname: "macbook-pro",
-                Chassis:  "Laptop",
-                OS:       "macOS 14.0",
-                Kernel:   "Darwin 23.0.0",
-                GPU:      "Apple M2",
-                Memory:   "8GB",
-                Display:  "2560x1600",
-                Uptime:   "5 hours",
-                Location: "Office",
-                Status:   "Offline",
-            },
-            {
-                Hostname: "raspberrypi",
-                Chassis:  "Mini",
-                OS:       "Raspberry Pi OS",
-                Kernel:   "6.1.0-rpi",
-                GPU:      "Broadcom VideoCore",
-                Memory:   "2GB",
-                Display:  "1280x720",
-                Uptime:   "12 hours",
-                Location: "Home",
-                Status:   "Unknown",
-            },
-        },
+            }
+        }(i, m)
     }
-    p := tea.NewProgram(model, tea.WithAltScreen())
-    if err := p.Start(); err != nil {
-        fmt.Fprintf(os.Stderr, "Error running program: %v\n", err)
+    wg.Wait()
+    return statuses
+}
+
+func fetchStatusesCmd() tea.Msg {
+    cfg, err := LoadConfig("config.yml")
+    if err != nil {
+        return statusMsg([]MachineStatus{})
+    }
+    statuses := fetchMachineStatus(cfg)
+    time.Sleep(5 * time.Second)
+    return statusMsg(statuses)
+}
+
+func main() {
+    cfg, err := LoadConfig("config.yml")
+    if err != nil {
+        fmt.Println("Failed to load config:", err)
+        os.Exit(1)
+    }
+    statuses := fetchMachineStatus(cfg)
+    model := &Model{
+        machines: statuses,
+    }
+    p := tea.NewProgram(model)
+    _, err = p.Run()
+    if err != nil {
+        fmt.Println("Error running program:", err)
         os.Exit(1)
     }
 }

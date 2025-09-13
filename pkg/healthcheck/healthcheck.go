@@ -140,55 +140,84 @@ func FetchStatus(m *MachineInfo) {
 			fmt.Fprintf(debugLogFile, "[DEBUG] Machine %d: CPU session failed, err=%v\n", m.ID, err)
 		}
 
-		// Fetch Memory info (try free -g, sysctl, /proc/meminfo)
+		// Fetch OS info
+		osSession, err := client.NewSession()
+		if err == nil {
+			defer osSession.Close()
+			osOut, err := osSession.Output("uname -s")
+			if err == nil {
+				m.OS = strings.TrimSpace(string(osOut))
+				fmt.Fprintf(debugLogFile, "[DEBUG] Machine %d: OS info fetched: %s\n", m.ID, m.OS)
+			} else {
+				m.OS = "unknown"
+				fmt.Fprintf(debugLogFile, "[DEBUG] Machine %d: OS info fetch failed, err=%v, output=%s\n", m.ID, err, string(osOut))
+			}
+		} else {
+			m.OS = "unknown"
+			fmt.Fprintf(debugLogFile, "[DEBUG] Machine %d: OS session failed, err=%v\n", m.ID, err)
+		}	
+
+		// Fetch Memory info (improved Darwin/macOS support)
 		memSession, err := client.NewSession()
 		if err == nil {
 			defer memSession.Close()
 			memSession.Setenv("TERM", "xterm-kitty")
 			var memOut []byte
-			memOut, err = memSession.Output("free -g | awk '/Mem:/ {print $2 \"GB\"}' || sysctl -n hw.memsize || cat /proc/meminfo | grep MemTotal")
-			memStr := strings.TrimSpace(string(memOut))
-			if err == nil && len(memStr) > 0 {
-				if strings.Contains(memStr, "MemTotal") {
-					// /proc/meminfo output: MemTotal:   16333736 kB
-					parts := strings.Fields(memStr)
-					if len(parts) >= 2 {
-						kb, parseErr := parseInt(parts[1])
+			var memStr string
+			if strings.HasPrefix(strings.ToLower(m.OS), "darwin") || strings.HasPrefix(strings.ToLower(m.OS), "mac") {
+				memOut, err = memSession.Output("system_profiler SPHardwareDataType | /usr/bin/awk \"/Memory:/ {print $2 $3}\"")
+				rawProfiler := string(memOut)
+				memLines := strings.Split(rawProfiler, "\n")
+				memStr = ""
+				for _, line := range memLines {
+					line = strings.TrimSpace(line)
+					if len(line) > 0 {
+						memStr = strings.ReplaceAll(line, "Memory:", "")
+						memStr = strings.ReplaceAll(memStr, " ", "")
+						break
+					}
+				}
+				fmt.Fprintf(debugLogFile, "[DEBUG] Machine %d: system_profiler command output (raw): '%s'\n", m.ID, rawProfiler)
+				if err == nil && len(memStr) > 0 {
+					m.Memory = memStr
+				} else {
+					m.Memory = "unknown"
+					fmt.Fprintf(debugLogFile, "[DEBUG] Machine %d: Darwin memory info fetch failed, err=%v, output=%s\n", m.ID, err, memStr)
+				}
+			} else {
+				memOut, err = memSession.Output("free -g | awk '/Mem:/ {print $2 \"GB\"}' || cat /proc/meminfo | grep MemTotal || sysctl -n hw.memsize")
+				memStr = strings.TrimSpace(string(memOut))
+				if err == nil && len(memStr) > 0 {
+					if strings.Contains(memStr, "MemTotal") {
+						parts := strings.Fields(memStr)
+						if len(parts) >= 2 {
+							kb, parseErr := parseInt(parts[1])
+							if parseErr == nil {
+								gb := kb / 1024 / 1024
+								m.Memory = fmt.Sprintf("%dGB", gb)
+							} else {
+								m.Memory = "unknown"
+							}
+						} else {
+							m.Memory = "unknown"
+						}
+					} else if strings.Contains(memStr, "GB") {
+						m.Memory = memStr
+					} else {
+						bytes, parseErr := parseInt(memStr)
 						if parseErr == nil {
-							gb := kb / 1024 / 1024
+							gb := bytes / 1024 / 1024 / 1024
 							m.Memory = fmt.Sprintf("%dGB", gb)
 						} else {
 							m.Memory = "unknown"
 						}
-					} else {
-						m.Memory = "unknown"
-					}
-				} else if strings.Contains(memStr, "GB") {
-					m.Memory = memStr
-				} else if strings.HasSuffix(m.OS, "Darwin") || strings.HasSuffix(m.OS, "Mac") {
-					// Darwin/macOS: sysctl -n hw.memsize returns bytes
-					bytes, parseErr := parseInt(memStr)
-					if parseErr == nil {
-						gb := bytes / 1024 / 1024 / 1024
-						m.Memory = fmt.Sprintf("%dGB", gb)
-					} else {
-						m.Memory = "unknown"
 					}
 				} else {
-					// Try to parse as bytes for other OSes
-					bytes, parseErr := parseInt(memStr)
-					if parseErr == nil {
-						gb := bytes / 1024 / 1024 / 1024
-						m.Memory = fmt.Sprintf("%dGB", gb)
-					} else {
-						m.Memory = "unknown"
-					}
+					m.Memory = "unknown"
+					fmt.Fprintf(debugLogFile, "[DEBUG] Machine %d: Memory info fetch failed, err=%v, output=%s\n", m.ID, err, memStr)
 				}
-				fmt.Fprintf(debugLogFile, "[DEBUG] Machine %d: Memory info fetched: %s\n", m.ID, m.Memory)
-			} else {
-				m.Memory = "unknown"
-				fmt.Fprintf(debugLogFile, "[DEBUG] Machine %d: Memory info fetch failed, err=%v, output=%s\n", m.ID, err, memStr)
 			}
+			fmt.Fprintf(debugLogFile, "[DEBUG] Machine %d: Memory info fetched: %s\n", m.ID, m.Memory)
 		} else {
 			m.Memory = "unknown"
 			fmt.Fprintf(debugLogFile, "[DEBUG] Machine %d: Memory session failed, err=%v\n", m.ID, err)
@@ -258,23 +287,6 @@ func FetchStatus(m *MachineInfo) {
 	fmt.Fprintf(debugLogFile, "[DEBUG] Machine %d: uptime fetched: %s\n", m.ID, string(uptimeOut))
 	m.Status = "Online"
 	m.Uptime = ParseUptime(string(uptimeOut))
-
-	// Fetch OS info
-	osSession, err := client.NewSession()
-	if err == nil {
-		defer osSession.Close()
-		osOut, err := osSession.Output("uname -s")
-		if err == nil {
-			m.OS = strings.TrimSpace(string(osOut))
-			fmt.Fprintf(debugLogFile, "[DEBUG] Machine %d: OS info fetched: %s\n", m.ID, m.OS)
-		} else {
-			m.OS = "unknown"
-			fmt.Fprintf(debugLogFile, "[DEBUG] Machine %d: OS info fetch failed, err=%v, output=%s\n", m.ID, err, string(osOut))
-		}
-	} else {
-		m.OS = "unknown"
-		fmt.Fprintf(debugLogFile, "[DEBUG] Machine %d: OS session failed, err=%v\n", m.ID, err)
-	}
 
 	// Fetch Kernel info
 	kernelSession, err := client.NewSession()

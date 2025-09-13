@@ -47,25 +47,6 @@ type MachineInfo struct {
 	Chassis  string // stores output of chassis info command
 }
 
-// FetchLocationWithRetry tries to fetch the machine's location via IP geolocation API, with retries, and approximates to nearest city
-func FetchLocationWithRetry(hostname string, maxRetries int) (lat float64, lon float64, city string, err error) {
-	var lastErr error
-	for attempt := 0; attempt < maxRetries; attempt++ {
-		lat, lon, city, lastErr = fetchLocationFromAPI(hostname)
-		if lastErr == nil {
-			return lat, lon, city, nil
-		}
-		time.Sleep(time.Duration(1+attempt) * time.Second)
-	}
-	return 0, 0, "unknown", lastErr
-}
-
-// fetchLocationFromAPI is a stub for actual geolocation API call
-func fetchLocationFromAPI(hostname string) (float64, float64, string, error) {
-	// TODO: Implement actual API call
-	return 43.6532, -79.3832, "Toronto", nil
-}
-
 // LoadPasswordsFromEnv loads the password for a given machine ID from the environment variables
 func LoadPasswordsFromEnv(machineID int) (string, error) {
 	_ = godotenv.Load()
@@ -119,7 +100,7 @@ func FetchStatus(m *MachineInfo) {
 			ssh.Password(m.Password),
 		},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-		Timeout: 3 * time.Second,
+		Timeout: 1* time.Second,
 	}
 	addr := fmt.Sprintf("%s:%d", m.Hostname, m.Port)
 
@@ -323,21 +304,64 @@ func FetchStatus(m *MachineInfo) {
 		} else {
 			chassisTypeOut, err2 := chassisSession.Output("cat /sys/class/dmi/id/chassis_type")
 			if err2 == nil && len(chassisTypeOut) > 0 {
-				chassisType := strings.TrimSpace(string(chassisTypeOut))
-				switch chassisType {
-				case "8":
-					chassis = "laptop"
-				case "3":
-					chassis = "desktop"
-				case "10":
-					chassis = "tablet"
-				case "9":
-					chassis = "notebook"
-				default:
-					chassis = "unknown"
+				dmidecodeOut, errDmi := chassisSession.Output("dmidecode -s system-product-name")
+				if errDmi == nil && len(dmidecodeOut) > 0 {
+					chassis = strings.TrimSpace(string(dmidecodeOut))
+					fmt.Fprintf(debugLogFile, "[DEBUG] Machine %d: dmidecode system-product-name output: %s\n", m.ID, string(dmidecodeOut))
+				} else {
+					productNameOut, errProd := chassisSession.Output("cat /sys/class/dmi/id/product_name")
+					if errProd == nil && len(productNameOut) > 0 {
+						chassis = strings.TrimSpace(string(productNameOut))
+						fmt.Fprintf(debugLogFile, "[DEBUG] Machine %d: product_name output: %s\n", m.ID, string(productNameOut))
+					} else {
+						chassisType := strings.TrimSpace(string(chassisTypeOut))
+						switch chassisType {
+						case "8":
+							chassis = "laptop"
+						case "3":
+							chassis = "desktop"
+						case "10":
+							chassis = "tablet"
+						case "9":
+							chassis = "notebook"
+						default:
+							chassis = "unknown"
+						}
+					}
 				}
 			} else {
-				chassis = "unknown"
+				// Try macOS hardware model using a new session for each command
+				var modelOut []byte
+				var err3 error
+				modelSession, sessErr := client.NewSession()
+				if sessErr == nil {
+					defer modelSession.Close()
+					modelOut, err3 = modelSession.Output("sysctl -n hw.model")
+				} else {
+					err3 = sessErr
+				}
+				if err3 == nil && len(modelOut) > 0 {
+					chassis = strings.TrimSpace(string(modelOut))
+					fmt.Fprintf(debugLogFile, "[DEBUG] Machine %d: sysctl hw.model output: %s\n", m.ID, string(modelOut))
+				} else {
+					// Try system_profiler for Model Identifier using a new session
+					var profilerOut []byte
+					var err4 error
+					profilerSession, sessErr2 := client.NewSession()
+					if sessErr2 == nil {
+						defer profilerSession.Close()
+						profilerOut, err4 = profilerSession.Output("system_profiler SPHardwareDataType | grep 'Model Identifier'")
+					} else {
+						err4 = sessErr2
+					}
+					if err4 == nil && len(profilerOut) > 0 {
+						chassis = strings.TrimSpace(string(profilerOut))
+						fmt.Fprintf(debugLogFile, "[DEBUG] Machine %d: system_profiler Model Identifier output: %s\n", m.ID, string(profilerOut))
+					} else {
+						chassis = "unknown"
+						fmt.Fprintf(debugLogFile, "[DEBUG] Machine %d: Mac model detection failed, sysctl err=%v, profiler err=%v\n", m.ID, err3, err4)
+					}
+				}
 			}
 		}
 		m.Chassis = chassis

@@ -1,0 +1,226 @@
+model {
+    context ecosystem {
+        title: "Hack the North"
+        icon: https://hackthenorth.com/favicon-32x32.png
+        link: https://hackthenorth.com
+
+        style {
+            color: green
+            shape: mobile
+            multiple true
+            opacity: 50%
+        }
+
+        component website {
+            title: "Website"
+            icon: https://hackthenorth.com/favicon-32x32.png
+            link: https://hackthenorth.com
+
+        style {
+            color: green
+            opacity: 50%
+        }
+  }
+
+    component portal {
+            title: "Portal"
+            icon: https://hackthenorth.com/favicon-32x32.png
+            link: https://my.hackthenorth.com
+
+        style {
+            color: green
+            opacity: 50%
+        }
+  }
+
+    component devpost {
+            title: "Devpost"
+            icon: https://assets.streamlinehq.com/image/private/w_300,h_300,ar_1/f_auto/v1/icons/logos/gitbook-nd0whr3sh9c27uti7ro26e.png/gitbook-77d71ll379hb4bindvycyg.png?_a=DATAg1AAZAA0
+            link: devpost.com/][hackthenorth2025.devpost.com
+
+        style {
+            color: green
+            opacity: 50%
+        }
+  }
+
+    component stats {
+        title: "Hyperliquid Stats"
+        link: https://stats.hyperliquid.xyz
+        style {
+            color: green
+            opacity: 50%
+        }
+     }
+
+    component sdks {
+        title: "SDKs"
+
+        style {
+            color: green
+            opacity: 50%
+        }
+    component official {
+        style {
+            color: green
+            opacity: 50%
+        }
+    container python {
+        title: "Python"
+        icon: tech:python
+        link: https://github.com/hyperliquid-dex/hyperliquid-python-sdk
+
+        style {
+            color: green
+            opacity: 50%
+        }
+     }
+    container rust {
+        title: "Rust"
+        icon: tech:rust
+        link: https://github.com/hyperliquid-dex/hyperliquid-rust-sdk
+
+        style {
+            color: green
+            opacity: 50%
+        }
+     }
+    }
+    container community {
+    title: "Community"
+        style {
+            color: green
+            opacity: 50%
+        }
+        container typescript {
+        title: "TypeScript"
+        icon: tech:typescript
+        link: https://github.com/nktkas/hyperliquid
+        style {
+            color: green
+            opacity: 50%
+        }
+}
+        container ccxt {
+        title: "CCXT"
+        icon: https://user-images.githubusercontent.com/1294454/112665445-2008ec80-8e6c-11eb-9647-623a347ddade.png
+        link: https://docs.ccxt.com/#/exchanges/hyperliquid
+        style {
+            color: green
+            opacity: 50%
+        }
+}
+}
+     }
+
+
+component hyperbft {
+    title: "HyperBFT"
+        style {
+            color: green
+            opacity: 50%
+        }
+
+    component hypercore {
+            title: "HyperCore"
+            link: https://hyperliquid.gitbook.io/hyperliquid-docs/hypercore/overview
+
+        style {
+            color: green
+            opacity: 50%
+        }
+
+container oracles {
+        title: "Oracles"
+        style {
+            color: green
+            opacity: 50%
+        }
+}
+
+container spot {
+        title: "Spot"
+        style {
+            color: green
+            opacity: 50%
+        }
+}
+
+container perps {
+        title: "Perps"
+        style {
+            color: green
+            opacity: 50%
+        }
+}
+
+container vaults {
+        title: "Vaults"
+        style {
+            color: green
+            opacity: 50%
+        }
+}
+
+container governance {
+        title: "Governance"
+        style {
+            color: green
+            opacity: 50%
+        }
+}
+  }
+
+    component hyperevm {
+            title: "HyperEVM"
+            link: https://hyperliquid.gitbook.io/hyperliquid-docs/hyperevm/overview
+
+        style {
+            color: green
+            opacity: 50%
+        }
+
+container borrowing-and-lending {
+        title: "Borrowing & Lending"
+        style {
+            color: green
+            opacity: 50%
+        }
+}
+
+container auctions {
+        title: "Auctions"
+        style {
+            color: green
+            opacity: 50%
+        }
+}
+
+container native-stablecoins {
+        title: "Native Stablecoins"
+        style {
+            color: green
+            opacity: 50%
+        }
+}
+
+container bridges {
+        title: "Bridges"
+        style {
+            color: green
+            opacity: 50%
+        }
+}
+  }
+
+    }
+}
+
+    ecosystem -> platform {
+        title: "uses"
+    }
+
+    platform -> external-providers {
+        title: "relies on"
+    }
+}

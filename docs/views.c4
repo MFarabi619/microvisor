@@ -1,0 +1,24 @@
+views {
+    view index {
+        title: "System Context"
+        description: "Top-level Overview"
+        include *
+        exclude external-providers -> platform
+    }
+
+    view platform of platform {
+        title: "Microvisor Platform"
+            include *
+            include tech-stack.*
+            include external-providers._
+	}
+
+    view mircovisor of platform.microvisor {
+        title: "Microvisor"
+            include *
+	}
+
+    view external-providers of external-providers {
+        include *
+    }
+}

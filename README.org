@@ -1,0 +1,3 @@
+* lazyos
+
+Kernel-agnostic operating system because why not 🤷

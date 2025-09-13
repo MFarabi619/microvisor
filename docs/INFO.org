@@ -1,0 +1,133 @@
+[[my.hackthenorth.com][my.hackthenorth.com]]
+
+* Welcome to Hardware Tool!
+
+We’re so excited to bring back our hardware loaning system to Hack the North 2025! Throughout the event, anyone can request and pick up hardware to use for their hack.
+
+If you’re new to hardware, no worries! We have a beginner friendly workshop called Printed Circuit Boards 101: Building a Binary Clock on Saturday at 11:00 AM - 12:00 PM in Workshop Room 3A (E7 3343). Plus, you can request mentors all weekend to help you.
+
+Please make all of your hardware requests using this tool. After that, you can pick up your items at the Shopify Maker Space located in rooms 1427/1437 on Floor 1 of E7 starting 10:00 PM on Friday. The checkout desk will be open all weekend except from 2:00-9:00 AM on Saturday and 2:00-7:00 AM on Sunday.
+
+Please take some time to read through the FAQ for important information on our sign-out process. For any hardware-related questions, reach out to hardware@hackthenorth.com.
+
+If the hardware you receive is defective or you think you have damaged it, please visit the hardware checkout desk. Replacements may be available, but please always inform us if your hardware is broken so that we don't give it out to someone else – you won’t be required to pay for it unless it was clearly damaged from misuse.
+
+No items are avilable yet, please check back later!
+
+** Frequently Asked Questions
+
+*** Can I sign out hardware without requesting it first?
+
+All items listed as "check-out" and "lottery" must be requested through the hardware tool before being picked up. Items listed as "free" don't need to be requested, you can grab these directly at the Shopify Maker Space.
+When do I need to request hardware?
+You can request and pick up hardware at any time during the event. Please note that once hacking starts, most items are likely to be signed out already.
+
+*** When do I need to return my hardware?
+Hardware must be returned by 2:00 PM on Sunday at the Shopify Maker Space. If you are a Hack the North finalist, you can return your hardware after the closing ceremonies.
+
+*** How long do I have to pick up my hardware?
+Hardware must be picked up within 3 hours of it being ready for pickup. For our high demand lottery items, your items must be picked up within an hour.
+
+*** Can I have someone else sign out hardware for me?
+No, you need to pick up your hardware items yourself. Hackers are required to leave their ID with us until their hardware items have been returned.
+
+*** What if I can’t leave my ID with you?
+Please talk to us at the Shopify Maker Space. We'll work with you to see if we can accommodate your case.
+When are you running the lottery for lottery items?
+The lottery will run at 1:00 AM on Saturday. A Slack message will be posted in the #hardware channel when hardware lottery selection has been completed.
+
+*** What if the only items I want are listed as free items?
+Free items are available to just “grab & go” at the Shopify Hardware Hub. You don’t need to sign these out on the hardware tool.
+How long will it take you to approve my hardware?
+Starting on Friday, hardware approvals should only take up to an hour at most. Closer to when hacking starts, orders should be approved within a few minutes. Please email hardware@hackthenorth.com with any concerns on approval.
+
+*** What do I do if my hardware gets canceled or denied?
+The most common reasons for canceled or denied orders are a lack of supply on our end, or an order with an unreasonable amount of requests. Please see us at the Shopify Hardware Hub for more information.
+
+*** What if I accidentally damage my items before returning them?
+Don’t worry, you will still get your ID back. If the hardware you receive is defective or you think you have damaged it, please visit the hardware checkout desk. Replacements may be available, but please always inform us if your hardware is broken so that we don’t give it out to someone else — you won’t be required to pay for it unless it was clearly damaged from misuse.
+
+*** What if I damage an item by accident and want to borrow a new one?
+Please return your item to the hardware checkout at the Shopify Hardware Hub. We will try to replace your item if we have extras in stock.
+
+*** Are there 3D Printers and Laser Cutters available?
+Yes! This year, we have 24/7 access to the 3D printing lab, which is equipped with over 10 Prusa printers and all the filament you can dream of! Additionally, the laser cutting machine in the lab will be available to hackers on Saturday afternoon. The 3D printing lab is located in room 2002 on Floor 2 of E5. 3D printers will be available on a first-come, first-served basis throughout the weekend, while laser cutting will be accessible only on Saturday afternoon — timings will be announced on Slack. Visit the lab with your design ready to go in an STL file format and our volunteers can show you what to do next! Complete beginner to 3D printing and don’t know where to start? Visit us anyways and we can help you get started.
+
+* TODO Create GitHub
+* TODO Create Penpot
+* TODO Join Devpost
+* TODO Flash FreeBSD to Surface
+* TODO Submit project
+
+* DONE Copy judging instructions
+
+** [[https://www.notion.so/2025-judging-instructions-faq][Judging Instructions & FAQ - Notion]] # FIXME: Not working
+
+** [[https://hackthenorth.notion.site/2025-submission-rules][Submission Rules]]
+**** *Team Rules*
+- [X] You may not be a part of more than one team.
+- [X] Each team can only submit one project.
+- [X] All members of your team must be accepted and registered as Hack the North 2025 participants.
+- [X] Teams may have up to 4 members, all of whom must be present in person at the event.
+- [X] Your participation at the event is subject to the [[https://hackthenorth.com/code-of-conduct][Hack the North Code of Conduct]].
+**** Project Rules
+- [ ] All code for your project must be written between 12:00 AM EDT on Saturday, September 13, 2025, and 8:00 AM EDT on Sunday, September 14, 2025.
+- [ ] All design assets for your project must be created between 12:00 AM EDT on Saturday, September 12, 2025, and 8:00 AM EDT on Sunday, September 14, 2025.
+- [ ] You must submit your project at [[https://hackthenorth2025.devpost.com/][hackthenorth2025.devpost.com]] before 8:00 AM EDT on Sunday, September 12 to be eligible to demo your project.
+- [ ] You may and are recommended to install any necessary software in advance.
+- [ ] You may plan your project out in advance.
+- [ ] You may 3D-print parts or prepare other structural components for hardware projects in advance.
+    -  [ ] You may *not* assemble hardware projects in advance.
+- [ ] You may gather a data set to train a model in an AI project in advance.
+    - [ ] You may *not* train a model on data for an AI project in advance.
+- [ ] Plagiarism is not tolerated and any teams with plagiarized work will be disqualified.
+- [ ] You may use any publicly available libraries/packages/design assets.
+- [ ] Please code with integrity! Final interpretation of these rules (including all rules on this page) is at the sole discretion of the Organizers, and potential violations will be dealt with on a case-by-case basis.
+**** Submission Rules
+- [ ] Submissions may not be submitted to multiple hackathons.
+- [ ] Submissions must include all design assets and source code created at Hack the North (e.g. via a link to your GitHub repository).
+
+
+*** *Hack the North Judging Rules*
+**** *First round*
+- [ ] You must be at your waiting room at your assigned time or your project will not be judged.
+- [ ] You will have five minutes to present once you're in the judging room. We recommend that you leave time at the end for judges to ask questions and/or give feedback (at the discretion of the judges).
+- [ ] Your judging pitch should be focused on a live demo of the project — not a slide show, product pitch, etc.
+
+**** *Second round*
+- [ ] If you are selected to proceed to the second round, you must be at the Project Expo on the second floor by 12:00 PM.
+- [ ] You will still have five minutes each to demo your project to multiple judges that approach your station.
+  - [ ] Once again, your judging pitch should be focused on a live demo of the project — not a slide show, product pitch, etc.
+
+**** People’s Choice Award
+- [ ] Projects that make it to the second round will have the chance to win the *People's Choice Award*.
+- [ ]  During the Project Expo, hackers can scan the QR code links on presenters' desks to vote for as many projects as they'd like, but only once per project.
+    - [ ] Voting will take place on Devpost. You must be signed in to the same Devpost account used in your project submission to vote.
+- [ ] The project with the most votes will win the People’s Choice Award. Only votes for projects in the second round will be counted.
+
+**** *Sponsor Judging Rules*
+- [ ] All projects that opt in to any sponsor prizes must indicate them on their Devpost submission.
+- [ ] You may submit your project to multiple API prizes.
+- [ ] You may find a full list of sponsor prizes on our [[https://hackthenorth2025.devpost.com/][Devpost]].
+- [ ] To ensure that your project will get judged, please fill out this interest form by 5 PM on Saturday: https://forms.gle/LsjrkqsY6DS1o2Li8
+
+** [[https://hackthenorth.notion.site/2025-judging-criteria][Judging Criteria - Notion]]
+
+*** ✅ *Criteria*
+  - Fulfilling will give you a better chance of becoming a finalist!
+**** ⭐ *WOW factor*
+- [ ] Judges will be looking for projects that stand out and leave a lasting impression! They’ll be looking for a project that achieves its goals (any goal!) exceptionally, whether that’s creatively, technically, or in any other dimension.
+****  *Technical Ability*
+- [ ] Showcased technical depth & demonstrated advanced technical knowledge will be rated more favorably. Take the time to learn something new at Hack the North with some of our workshops!
+****  *Originality*
+- [ ] Tackle a new problem, approach a current problem a new way, or make something unique and cool — even if it doesn’t solve a problem — to impress our judges!
+****  *Design*
+- [ ] Judges will be looking for projects that offer a user-friendly experience. Make sure your product is intuitive and engaging for its target audience!
+
+*** ❌ *Non-criteria*
+- [ ] Judges will not take the =Non-criteria= into consideration when judging.
+**** *Practicality & entrepreneurship*
+- [ ] A project *does not* need to be useful or solve a real-world problem to be successful. It’s entirely possible for a project to be a finalist even if there’s no commercial viability!
+**** *Visual Appeal*
+- [ ] Separate from design, a project can look great, but this doesn’t necessarily translate into a good user experience.
+

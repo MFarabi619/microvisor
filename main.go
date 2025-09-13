@@ -22,7 +22,6 @@ type MachineStatus struct {
     Display  string
     Uptime   string
     Location string
-
     Status   string
 }
 

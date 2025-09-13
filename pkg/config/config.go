@@ -11,7 +11,6 @@ type Machine struct {
 	Username       string            `yaml:"username"`
 	Hostname       string            `yaml:"hostname"`
 	Port           int               `yaml:"port"`
-	SetEnv         map[string]string `yaml:"set_env"`
 	AddKeysToAgent bool              `yaml:"add_keys_to_agent"`
 }
 

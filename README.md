@@ -1,2 +1,3 @@
 # lazyos
-A kernel agnostic operating system.
+
+A TUI to manage kernel agnostic operating systems.

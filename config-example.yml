@@ -1,0 +1,25 @@
+machines:
+  - id: 1
+    label: nixos
+    username: mfarabi
+    hostname: 10.37.117.32
+    port: 22
+    add_keys_to_agent: true
+  - id: 2
+    label: freebsd
+    username: mfarabi
+    hostname: 10.37.111.198
+    port: 22
+    add_keys_to_agent: true
+  - id: 3
+    label: rpi5
+    username: mfarabi
+    hostname: 10.37.117.32
+    port: 22
+    add_keys_to_agent: true
+  - id: 4
+    label: macos
+    username: mfarabi
+    hostname: 10.37.115.62
+    port: 22
+    add_keys_to_agent: true

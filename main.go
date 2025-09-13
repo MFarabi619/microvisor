@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -17,9 +18,8 @@ type MachineStatus struct {
     Chassis  string
     OS       string
     Kernel   string
-    GPU      string
+    CPU      string
     Memory   string
-    Display  string
     Uptime   string
     Location string
     Status   string
@@ -133,13 +133,17 @@ func (m *Model) View() string {
         return borderStyle.Width(m.width).Height(m.height).Render(helpContent)
     }
 
-    colWidths := []int{15, 10, 15, 15, 15, 10, 12, 10, 10, 10}
-    headers := []string{"Hostname", "Chassis", "OS", "Kernel", "GPU", "Memory", "Display", "Uptime", "Location", "Status"}
+    colWidths := []int{15, 10, 15, 15, 15, 10, 10, 10, 10}
+    headers := []string{"Hostname", "Chassis", "OS", "Kernel", "CPU", "Memory", "Uptime", "Location", "Status"}
     for i, h := range headers {
         headers[i] = truncate(h, colWidths[i])
     }
-    header := fmt.Sprintf("%-15s %-10s %-15s %-15s %-15s %-10s %-12s %-10s %-10s %-10s",
-        headers[0], headers[1], headers[2], headers[3], headers[4], headers[5], headers[6], headers[7], headers[8], headers[9])
+    headerFields := make([]string, len(headers))
+    for i, h := range headers {
+        headerFields[i] = truncate(h, colWidths[i])
+    }
+    header := fmt.Sprintf("%-15s %-10s %-15s %-15s %-15s %-10s %-10s %-10s %-10s",
+        headerFields[0], headerFields[1], headerFields[2], headerFields[3], headerFields[4], headerFields[5], headerFields[6], headerFields[7], headerFields[8])
 
     var rows []string
     rows = append(rows, lipgloss.NewStyle().Bold(true).Underline(true).Render(header))
@@ -153,20 +157,17 @@ func (m *Model) View() string {
         default:
             statusColor = lipgloss.NewStyle().Foreground(lipgloss.Color("8")) // Gray
         }
-        fields := []string{
-            truncate(os.Hostname, colWidths[0]),
-            truncate(os.Chassis, colWidths[1]),
-            truncate(os.OS, colWidths[2]),
-            truncate(os.Kernel, colWidths[3]),
-            truncate(os.GPU, colWidths[4]),
-            truncate(os.Memory, colWidths[5]),
-            truncate(os.Display, colWidths[6]),
-            truncate(os.Uptime, colWidths[7]),
-            truncate(os.Location, colWidths[8]),
-            truncate(os.Status, colWidths[9]),
-        }
-        row := fmt.Sprintf("%-15s %-10s %-15s %-15s %-15s %-10s %-12s %-10s %-10s %-10s",
-            fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], fields[6], fields[7], fields[8], fields[9])
+    fields := make([]string, len(colWidths))
+    fields[0] = pad(truncate(os.Hostname, colWidths[0]), colWidths[0])
+    fields[1] = pad(truncate(trim(firstLine(os.Chassis)), colWidths[1]), colWidths[1])
+    fields[2] = pad(truncate(os.OS, colWidths[2]), colWidths[2])
+    fields[3] = pad(truncate(os.Kernel, colWidths[3]), colWidths[3])
+    fields[4] = pad(truncate(firstLine(os.CPU), colWidths[4]), colWidths[4])
+    fields[5] = pad(truncate(firstLine(os.Memory), colWidths[5]), colWidths[5])
+    fields[6] = pad(truncate(os.Uptime, colWidths[6]), colWidths[6])
+    fields[7] = pad(truncate(os.Location, colWidths[7]), colWidths[7])
+    fields[8] = pad(truncate(os.Status, colWidths[8]), colWidths[8])
+    row := strings.Join(fields, " ")
         row = statusColor.Render(row)
         if i == m.selected {
             row = lipgloss.NewStyle().Background(lipgloss.Color("7")).Foreground(lipgloss.Color("0")).Render(row)
@@ -184,6 +185,13 @@ func (m *Model) View() string {
     return border
 }
 
+func pad(s string, width int) string {
+    if len(s) < width {
+        return s + strings.Repeat(" ", width-len(s))
+    }
+    return s
+}
+
 func fetchMachineStatus(cfg *config.Config) []MachineStatus {
     infos := healthcheck.ConvertMachines(cfg.Machines)
     statuses := make([]MachineStatus, len(infos))
@@ -193,15 +201,42 @@ func fetchMachineStatus(cfg *config.Config) []MachineStatus {
         go func(idx int, inf healthcheck.MachineInfo) {
             defer wg.Done()
             healthcheck.FetchStatus(&inf)
+            chassis := strings.TrimSpace(inf.Chassis)
+            if strings.HasPrefix(chassis, "Chassis:") {
+                chassis = strings.TrimSpace(strings.TrimPrefix(chassis, "Chassis:"))
+                // Only take the first word after 'Chassis:'
+                if len(chassis) > 0 {
+                    chassis = strings.Fields(chassis)[0]
+                }
+            }
+            // Only show city name in location
             statuses[idx] = MachineStatus{
                 Hostname: inf.Hostname,
                 Status:   inf.Status,
-                // leave other fields blank for now
+                Uptime:   inf.Uptime,
+                OS:       inf.OS,
+                Kernel:   inf.Kernel,
+                CPU:      inf.CPU,
+                Memory:   inf.Memory,
+                Chassis:  chassis,
             }
         }(i, info)
     }
     wg.Wait()
     return statuses
+}
+
+func firstLine(s string) string {
+    for i, c := range s {
+        if c == '\n' {
+            return s[:i]
+        }
+    }
+    return s
+}
+
+func trim(s string) string {
+    return strings.TrimSpace(s)
 }
 
 func main() {

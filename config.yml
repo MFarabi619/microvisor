@@ -1,21 +1,33 @@
 machines:
   - id: 1
-    username: nixos
+    label: nixos
+    username: mfarabi
     hostname: 10.37.117.32
     port: 22
-    user: mfarabi
+    set_env:
+      TERM: "xterm-kitty"
+    add_keys_to_agent: true
   - id: 2
-    username: freebsd
-    hostname: 10.37.111.19
+    label: freebsd
+    username: mfarabi
+    hostname: 10.37.111.198
     port: 22
-    user: mfarabi
+    set_env:
+      TERM: "xterm-kitty"
+    add_keys_to_agent: true
   - id: 3
-    username: rpi5
+    label: rpi5
+    username: mfarabi
     hostname: 10.37.117.32
     port: 22
-    user: mfarabi
+    set_env:
+      TERM: "xterm-kitty"
+    add_keys_to_agent: true
   - id: 4
-    username: macos
+    label: macos
+    username: mfarabi
     hostname: 10.37.115.62
     port: 22
-    user: mfarabi
+    set_env:
+      TERM: "xterm-kitty"
+    add_keys_to_agent: true

@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"os"
@@ -7,11 +7,12 @@ import (
 )
 
 type Machine struct {
-	ID       int    `yaml:"id"`
-	Username string `yaml:"username"`
-	Hostname string `yaml:"hostname"`
-	Port     int    `yaml:"port"`
-	User     string `yaml:"user"`
+	ID             int               `yaml:"id"`
+	Username       string            `yaml:"username"`
+	Hostname       string            `yaml:"hostname"`
+	Port           int               `yaml:"port"`
+	SetEnv         map[string]string `yaml:"set_env"`
+	AddKeysToAgent bool              `yaml:"add_keys_to_agent"`
 }
 
 type Config struct {

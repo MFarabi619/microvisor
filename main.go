@@ -8,6 +8,8 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/xsachax/lazyos/pkg/config"
+	"github.com/xsachax/lazyos/pkg/healthcheck"
 )
 
 type MachineStatus struct {
@@ -31,7 +33,7 @@ type Model struct {
     selected  int
     showHelp  bool
     mu        sync.Mutex
-    cfg       *Config
+    cfg       *config.Config
 }
 
 var (
@@ -52,14 +54,7 @@ func init() {
 }
 
 func (m *Model) fetchStatusesCmd() tea.Cmd {
-    var first = true
     return func() tea.Msg {
-        if first {
-            first = false
-            statuses := fetchMachineStatus(m.cfg)
-            return statusMsg(statuses)
-        }
-        time.Sleep(5 * time.Second)
         statuses := fetchMachineStatus(m.cfg)
         return statusMsg(statuses)
     }
@@ -105,7 +100,10 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         m.mu.Lock()
         m.machines = msg
         m.mu.Unlock()
-        return m, m.fetchStatusesCmd()
+        // Schedule next update after 5 seconds using tea.Tick
+        return m, tea.Tick(5*time.Second, func(t time.Time) tea.Msg {
+            return statusMsg(fetchMachineStatus(m.cfg))
+        })
     }
     return m, nil
 }
@@ -187,36 +185,30 @@ func (m *Model) View() string {
     return border
 }
 
-func fetchMachineStatus(cfg *Config) []MachineStatus {
-    fmt.Fprintf(debugLogFile, "fetchMachineStatus: cfg.Machines len=%d\n", len(cfg.Machines))
-    statuses := make([]MachineStatus, len(cfg.Machines))
+func fetchMachineStatus(cfg *config.Config) []MachineStatus {
+    infos := healthcheck.ConvertMachines(cfg.Machines)
+    statuses := make([]MachineStatus, len(infos))
     var wg sync.WaitGroup
-    for i, m := range cfg.Machines {
-        fmt.Fprintf(debugLogFile, "fetchMachineStatus: machine[%d]=%+v\n", i, m)
+    for i, info := range infos {
         wg.Add(1)
-        go func(idx int, mach Machine) {
+        go func(idx int, inf healthcheck.MachineInfo) {
             defer wg.Done()
+            healthcheck.FetchStatus(&inf)
             statuses[idx] = MachineStatus{
-                Hostname: mach.Hostname,
-                Chassis:  "Laptop",
-                OS:       "Linux",
-                Kernel:   "5.15.0",
-                GPU:      "Intel UHD",
-                Memory:   "16GB",
-                Display:  "1920x1080",
-                Uptime:   "2 days",
-                Location: "Toronto",
-                Status:   "Online",
+                Hostname: inf.Hostname,
+                Status:   inf.Status,
+                // leave other fields blank for now
             }
-        }(i, m)
+        }(i, info)
     }
     wg.Wait()
-    fmt.Fprintf(debugLogFile, "fetchMachineStatus: statuses len=%d\n", len(statuses))
     return statuses
 }
 
 func main() {
-    cfg, err := LoadConfig("config.yml")
+    // Clear log file before each execution
+    _ = os.WriteFile("lazyos.log", []byte{}, 0644)
+    cfg, err := config.LoadConfig("config.yml")
     if err != nil {
         fmt.Println("Failed to load config:", err)
         os.Exit(1)

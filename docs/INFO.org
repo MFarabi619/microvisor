@@ -131,3 +131,10 @@ Yes! This year, we have 24/7 access to the 3D printing lab, which is equipped wi
 **** *Visual Appeal*
 - [ ] Separate from design, a project can look great, but this doesn’t necessarily translate into a good user experience.
 
+
+*** Sponsor tracks we picked:
+- CUA AI
+- Graphite
+- Groq
+- Warp
+- Y Combinator

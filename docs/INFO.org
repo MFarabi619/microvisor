@@ -74,18 +74,18 @@ Yes! This year, we have 24/7 access to the 3D printing lab, which is equipped wi
 - [ ] All code for your project must be written between 12:00 AM EDT on Saturday, September 13, 2025, and 8:00 AM EDT on Sunday, September 14, 2025.
 - [ ] All design assets for your project must be created between 12:00 AM EDT on Saturday, September 12, 2025, and 8:00 AM EDT on Sunday, September 14, 2025.
 - [ ] You must submit your project at [[https://hackthenorth2025.devpost.com/][hackthenorth2025.devpost.com]] before 8:00 AM EDT on Sunday, September 12 to be eligible to demo your project.
-- [ ] You may and are recommended to install any necessary software in advance.
-- [ ] You may plan your project out in advance.
-- [ ] You may 3D-print parts or prepare other structural components for hardware projects in advance.
-    -  [ ] You may *not* assemble hardware projects in advance.
-- [ ] You may gather a data set to train a model in an AI project in advance.
-    - [ ] You may *not* train a model on data for an AI project in advance.
-- [ ] Plagiarism is not tolerated and any teams with plagiarized work will be disqualified.
-- [ ] You may use any publicly available libraries/packages/design assets.
-- [ ] Please code with integrity! Final interpretation of these rules (including all rules on this page) is at the sole discretion of the Organizers, and potential violations will be dealt with on a case-by-case basis.
+- [X] You may and are recommended to install any necessary software in advance.
+- [X] You may plan your project out in advance.
+- [X] You may 3D-print parts or prepare other structural components for hardware projects in advance.
+    - [X] You may *not* assemble hardware projects in advance.
+- [X] You may gather a data set to train a model in an AI project in advance.
+    - [X] You may *not* train a model on data for an AI project in advance.
+- [X] Plagiarism is not tolerated and any teams with plagiarized work will be disqualified.
+- [X] You may use any publicly available libraries/packages/design assets.
+- [X] Please code with integrity! Final interpretation of these rules (including all rules on this page) is at the sole discretion of the Organizers, and potential violations will be dealt with on a case-by-case basis.
 **** Submission Rules
-- [ ] Submissions may not be submitted to multiple hackathons.
-- [ ] Submissions must include all design assets and source code created at Hack the North (e.g. via a link to your GitHub repository).
+- [X] Submissions may not be submitted to multiple hackathons.
+- [X] Submissions must include all design assets and source code created at Hack the North (e.g. via a link to your GitHub repository).
 
 
 *** *Hack the North Judging Rules*
@@ -116,13 +116,13 @@ Yes! This year, we have 24/7 access to the 3D printing lab, which is equipped wi
 *** ✅ *Criteria*
   - Fulfilling will give you a better chance of becoming a finalist!
 **** ⭐ *WOW factor*
-- [ ] Judges will be looking for projects that stand out and leave a lasting impression! They’ll be looking for a project that achieves its goals (any goal!) exceptionally, whether that’s creatively, technically, or in any other dimension.
+- [X] Judges will be looking for projects that stand out and leave a lasting impression! They’ll be looking for a project that achieves its goals (any goal!) exceptionally, whether that’s creatively, technically, or in any other dimension.
 ****  *Technical Ability*
-- [ ] Showcased technical depth & demonstrated advanced technical knowledge will be rated more favorably. Take the time to learn something new at Hack the North with some of our workshops!
+- [X] Showcased technical depth & demonstrated advanced technical knowledge will be rated more favorably. Take the time to learn something new at Hack the North with some of our workshops!
 ****  *Originality*
-- [ ] Tackle a new problem, approach a current problem a new way, or make something unique and cool — even if it doesn’t solve a problem — to impress our judges!
+- [X] Tackle a new problem, approach a current problem a new way, or make something unique and cool — even if it doesn’t solve a problem — to impress our judges!
 ****  *Design*
-- [ ] Judges will be looking for projects that offer a user-friendly experience. Make sure your product is intuitive and engaging for its target audience!
+- [X] Judges will be looking for projects that offer a user-friendly experience. Make sure your product is intuitive and engaging for its target audience!
 
 *** ❌ *Non-criteria*
 - [ ] Judges will not take the =Non-criteria= into consideration when judging.

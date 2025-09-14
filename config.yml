@@ -29,9 +29,3 @@ machines:
     hostname: 10.37.97.63
     port: 22
     add_keys_to_agent: true
-  - id: 6
-    label: macos
-    username: sacha
-    hostname: 10.37.116.22
-    port: 22
-    add_keys_to_agent: true

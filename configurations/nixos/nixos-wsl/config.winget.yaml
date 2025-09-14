@@ -1,0 +1,64 @@
+# yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
+
+###########################################################################
+# This configuration will modify various Windows Settings.                #
+# PowerShell module: Microsoft.Windows.Settings (v0.1.0-alpha)            #
+###########################################################################
+
+manifestVersion: 1.0.0
+name: "win11"
+description: "Windows 11 + NixOS WSL"
+version: 1.0.0
+
+properties:
+  configurationVersion: 0.2.0
+  resources:
+    - resource: Microsoft.Windows.Developer/Taskbar
+      directives:
+        description: Modify taskbar settings
+        allowPrerelease: true
+      settings:
+        Alignment: Middle # [Left, Middle]
+        HideLabelsMode: Never # [KeepCurrentValue, WhenFull, Always]
+        SearchBoxMode: Hide # [ShowIconAndLabel, ShowIconOnly, SearchBox, Hide]
+        TaskViewButton: Hide # [Show, Hide]
+        WidgetsButton: Hide # [Show, Hide]
+        RestartExplorer: True # Use caution when setting `RestartExplorer: true` as this will force explorer to close. Required for `HideLabelsMode`.
+
+    - resource: Microsoft.Windows.Developer/WindowsExplorer
+      directives:
+        description: Modify Windows Explorer settings
+        allowPrerelease: true
+      settings:
+        FileExtensions: Show # [Show, Hide]
+        HiddenFiles: Show # [Show, Hide]
+        ItemCheckBoxes: Hide # [Show, Hide]
+        RestartExplorer: True # Use caution when setting `RestartExplorer: true` as this will force explorer to close. Required for all WindowsExplorer settings.
+
+    - resource: Microsoft.WinGet.Dsc.Registry
+      id: EnableLongPaths
+      settings:
+        Key: HKLM\SYSTEM\CurrentControlSet\Control\FileSystem
+        Value: LongPathsEnabled
+        Data: 1
+        Type: DWord
+
+    - resource: Microsoft.WinGet.Dsc.Package
+      id: Vivaldi
+      settings:
+        PackageIdentifier: Vivaldi.Vivaldi
+
+    - resource: Microsoft.WinGet.Dsc.Package
+      id: PowerToys
+      settings:
+        PackageIdentifier: Microsoft.PowerToys
+
+    - resource: Microsoft.WinGet.Dsc.Package
+      id: PowerShell
+      settings:
+        PackageIdentifier: Microsoft.PowerShell
+
+    - resource: Microsoft.WinGet.Dsc.Package
+      id: Ubuntu
+      settings:
+        PackageIdentifier: Ubuntu

@@ -14,7 +14,7 @@ machines:
   - id: 3
     label: rpi5
     username: mfarabi
-    hostname: 0.1.2.3
+    hostname: 10.37.103.163
     port: 22
     add_keys_to_agent: true
   - id: 4

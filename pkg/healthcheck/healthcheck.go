@@ -255,6 +255,24 @@ func fetchChassis(client *ssh.Client, osName string) (string, error) {
 		       return strings.TrimSpace(string(profilerOut)), nil
 	       }
        }
+       // Raspberry Pi: try /proc/device-tree/model
+       piModelSession, piSessErr := client.NewSession()
+       if piSessErr == nil {
+	       defer piModelSession.Close()
+	       piModelOut, piModelErr := piModelSession.Output("cat /proc/device-tree/model")
+	       if piModelErr == nil && len(piModelOut) > 0 {
+		       return strings.TrimSpace(string(piModelOut)), nil
+	       }
+       }
+       // Fallback: try /proc/cpuinfo for Raspberry Pi
+       cpuInfoSession, cpuInfoSessErr := client.NewSession()
+       if cpuInfoSessErr == nil {
+	       defer cpuInfoSession.Close()
+	       cpuInfoOut, cpuInfoErr := cpuInfoSession.Output("cat /proc/cpuinfo | grep 'Model' || true")
+	       if cpuInfoErr == nil && len(cpuInfoOut) > 0 {
+		       return strings.TrimSpace(string(cpuInfoOut)), nil
+	       }
+       }
        return "unknown", nil
 }
 

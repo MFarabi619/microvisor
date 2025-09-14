@@ -7,6 +7,12 @@
     ./environment.nix
     ./homebrew.nix
     ./networking.nix
+    ./nixpkgs.nix
     ./power.nix
+    ../nixos/common/fonts.nix
+    ./security.nix
+    ./services
+    ./system.nix
+    ./stylix.nix
   ];
 }

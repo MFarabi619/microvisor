@@ -4,6 +4,7 @@
 {
   imports = [
     # flake.inputs.self.nixosModules.default
+    ./services
     ./environment.nix
     ./hardware.nix
     ./myusers.nix

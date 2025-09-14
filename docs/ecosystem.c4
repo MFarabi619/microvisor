@@ -36,7 +36,7 @@ model {
     component devpost {
             title: "Devpost"
             icon: https://assets.streamlinehq.com/image/private/w_300,h_300,ar_1/f_auto/v1/icons/logos/gitbook-nd0whr3sh9c27uti7ro26e.png/gitbook-77d71ll379hb4bindvycyg.png?_a=DATAg1AAZAA0
-            link: devpost.com/][hackthenorth2025.devpost.com
+            link: https://devpost.com/hackthenorth2025.devpost.com
 
         style {
             color: green

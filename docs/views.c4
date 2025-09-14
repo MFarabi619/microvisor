@@ -6,16 +6,24 @@ views {
         exclude external-providers -> platform
     }
 
+    view ecosystem of ecosystem {
+        title: "Hack the North"
+            include *
+	}
+
+
     view platform of platform {
         title: "Microvisor Platform"
             include *
-            include tech-stack.*
             include external-providers._
 	}
 
-    view mircovisor of platform.microvisor {
-        title: "Microvisor"
-            include *
+    view os of platform.os {
+        title: "Operating System"
+        include *
+        include userspaces.*
+        include kernels.*
+        include nixos.*
 	}
 
     view external-providers of external-providers {

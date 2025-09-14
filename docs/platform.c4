@@ -23,7 +23,7 @@ model {
                     icon https://guix.gnu.org/themes/initial/img/icon.svg
                     description: "NixOS alternative in Scheme from the GNU project, with a focus on libre software for academics."
                     style {
-                        color: yellow
+                        color: yellow-800
                         opacity: 40%
                     }
                     }
@@ -130,7 +130,7 @@ model {
 
             kernels = container "Kernels" {
             style {
-            color: yellow
+            color: yellow-800
             opacity: 40%
 }
 
@@ -142,12 +142,12 @@ UNIX-like kernel developed by [Linus Torvalds](https://en.wikipedia.org/wiki/Lin
                     icon tech:linux
 
                     style {
-                        color: yellow
+                        color: yellow-800
                         opacity: 40%
                     }
                     filesystem-hierarchy-standard = container "Filesystem Hierarchy Standard (FHS)" {
                     style{
-                    color: yellow
+                    color: yellow-800
                     opacity: 40%
 }
 root = component "/" {
@@ -185,55 +185,3 @@ description: "Shared libraries"
     }
 }
 
-model {
-    context external-providers {
-        title: "External Providers"
-        icon: https://www.svgrepo.com/show/474375/cloud-server2.svg
-        style {
-            color: yellow-600
-            opacity: 10%
-            shape: browser
-        }
-
-    component devpost {
-        title: "Devpost"
-        icon: https://d2dmyh35ffsxbl.cloudfront.net/assets/reimagine2/devpost-logo-25d0005ec83e3b9ef6fce93235bb6d642d7c828f31758ebdb5b7ee87de7d45c3.svg
-        link : https://hackthenorth2025.devpost.com
-        style {
-            color: stone-500
-            shape: browser
-        }
-    }
-
-    component github {
-        title: "GitHub"
-        icon: tech:github
-        link : https://github.com
-        style {
-            color: stone-500
-            shape: browser
-        }
-    }
-
-            component notion {
-                title: "Notion"
-                icon: https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/notion/notion-original.svg
-                description: "Enterprise workspace provider"
-                link : https://notion.com
-                style {
-                    color: slate
-                    shape: browser
-                }
-            }
-
-component discord {
-                title: "Discord"
-                icon: https://www.svgrepo.com/show/353655/discord-icon.svg
-                link : https://discord.com
-                style {
-                    color: slate
-                    shape: mobile
-                }
-            }
-    }
-}

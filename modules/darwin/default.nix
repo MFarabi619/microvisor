@@ -4,5 +4,6 @@
   imports = [
     ./myusers.nix
     ./documentation.nix
+    ./environment.nix
   ];
 }

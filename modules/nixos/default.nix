@@ -14,9 +14,11 @@
     ./myusers.nix
     ./networking.nix
     ./nix.nix
+    ./programs.nix
     ./security.nix
     ./systemd.nix
     ./time.nix
     ./virtualisation.nix
+    ./xdg.nix
   ];
 }

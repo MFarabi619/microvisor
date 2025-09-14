@@ -19,6 +19,15 @@
     };
   };
 
+  processes =  {
+    docs = {
+      description = " 📚 C4 Model";
+      exec = ''
+        pnpx likec4 start
+      '';
+    };
+  };
+
   scripts = {
     hello.exec = ''
       echo hello

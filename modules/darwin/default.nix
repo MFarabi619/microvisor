@@ -7,5 +7,6 @@
     ./environment.nix
     ./homebrew.nix
     ./networking.nix
+    ./power.nix
   ];
 }

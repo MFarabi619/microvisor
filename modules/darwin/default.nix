@@ -3,5 +3,6 @@
 {
   imports = [
     ./myusers.nix
+    ./documentation.nix
   ];
 }

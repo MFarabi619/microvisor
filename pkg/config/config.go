@@ -8,6 +8,7 @@ import (
 
 type Machine struct {
 	ID             int               `yaml:"id"`
+	Label          string            `yaml:"label"`
 	Username       string            `yaml:"username"`
 	Hostname       string            `yaml:"hostname"`
 	Port           int               `yaml:"port"`

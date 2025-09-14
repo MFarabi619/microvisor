@@ -1,6 +1,6 @@
 machines:
   - id: 1
-    label: nixos
+    label: nixos-1
     username: mfarabi
     hostname: 10.37.117.32
     port: 22
@@ -27,5 +27,11 @@ machines:
     label: archlinux
     username: mfarabi
     hostname: 10.37.97.63
+    port: 22
+    add_keys_to_agent: true
+  - id: 6
+    label: nixos-2
+    username: mfarabi
+    hostname: 10.37.101.90
     port: 22
     add_keys_to_agent: true

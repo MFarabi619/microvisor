@@ -14,6 +14,7 @@ import (
 )
 
 type MachineStatus struct {
+    Label    string
     Hostname string
     Chassis  string
     OS       string
@@ -163,12 +164,11 @@ func (m *Model) View() string {
     return borderStyle.Width(m.width-2).Height(m.height-2).Render(helpContent)
     }
 
-    colWidths := []int{18, 10, 15, 15, 15, 13, 10, 10, 10} // Increased Hostname and Memory widths
+    colWidths := []int{12, 18, 10, 15, 15, 13, 10, 10, 10, 10} // Added Label column
     headers := []string{
-        "🏷️ Hostname", "🏠 Chassis", "🖥️ OS", "🧬 Kernel", "🧠 CPU", "💾 Memory", "⏳ Uptime", "📍 Location", "Status"}
-    // Do not truncate headers with icons
-    header := headerStyle.Render(fmt.Sprintf("%-18s %-10s %-15s %-15s %-15s %-13s %-10s %-10s %-10s",
-        headers[0], headers[1], headers[2], headers[3], headers[4], headers[5], headers[6], headers[7], headers[8]))
+        "🏷️ Label", "🏷️ Hostname", "🏠 Chassis", "🖥️ OS", "🧬 Kernel", "🧠 CPU", "💾 Memory", "⏳ Uptime", "📍 Location", "Status"}
+    header := headerStyle.Render(fmt.Sprintf("%-12s %-18s %-10s %-15s %-15s %-13s %-10s %-10s %-10s %-10s",
+        headers[0], headers[1], headers[2], headers[3], headers[4], headers[5], headers[6], headers[7], headers[8], headers[9]))
 
     var rows []string
     rows = append(rows, header)
@@ -186,16 +186,16 @@ func (m *Model) View() string {
             statusColor = "8"
         }
         fields := make([]string, len(colWidths))
-        fields[0] = pad(truncate(os.Hostname, colWidths[0]), colWidths[0])
-        fields[1] = pad(truncate(trim(firstLine(os.Chassis)), colWidths[1]), colWidths[1])
-        fields[2] = pad(truncate(os.OS, colWidths[2]), colWidths[2])
-        fields[3] = pad(truncate(os.Kernel, colWidths[3]), colWidths[3])
-        fields[4] = pad(truncate(firstLine(os.CPU), colWidths[4]), colWidths[4])
-        fields[5] = pad(truncate(firstLine(os.Memory), colWidths[5]), colWidths[5])
-        fields[6] = pad(truncate(os.Uptime, colWidths[6]), colWidths[6])
-        fields[7] = pad(truncate(os.Location, colWidths[7]), colWidths[7])
-        // Do not pad the last column
-        fields[8] = truncate(os.Status, colWidths[8])
+        fields[0] = pad(truncate(os.Label, colWidths[0]), colWidths[0])
+        fields[1] = pad(truncate(os.Hostname, colWidths[1]), colWidths[1])
+        fields[2] = pad(truncate(trim(firstLine(os.Chassis)), colWidths[2]), colWidths[2])
+        fields[3] = pad(truncate(os.OS, colWidths[3]), colWidths[3])
+        fields[4] = pad(truncate(os.Kernel, colWidths[4]), colWidths[4])
+        fields[5] = pad(truncate(firstLine(os.CPU), colWidths[5]), colWidths[5])
+        fields[6] = pad(truncate(firstLine(os.Memory), colWidths[6]), colWidths[6])
+        fields[7] = pad(truncate(os.Uptime, colWidths[7]), colWidths[7])
+        fields[8] = pad(truncate(os.Location, colWidths[8]), colWidths[8])
+        fields[9] = truncate(os.Status, colWidths[9])
         row := fmt.Sprintf("%s %s", statusIcon, strings.Join(fields, " "))
         row = strings.TrimRight(row, " ")
         styledRow := lipgloss.NewStyle().Foreground(lipgloss.Color(statusColor)).Render(row)
@@ -228,19 +228,18 @@ func fetchMachineStatus(cfg *config.Config) []MachineStatus {
     var wg sync.WaitGroup
     for i, info := range infos {
         wg.Add(1)
-        go func(idx int, inf healthcheck.MachineInfo) {
+        go func(idx int, inf healthcheck.MachineInfo, label string) {
             defer wg.Done()
             healthcheck.FetchStatus(&inf)
             chassis := strings.TrimSpace(inf.Chassis)
             if strings.HasPrefix(chassis, "Chassis:") {
                 chassis = strings.TrimSpace(strings.TrimPrefix(chassis, "Chassis:"))
-                // Only take the first word after 'Chassis:'
                 if len(chassis) > 0 {
                     chassis = strings.Fields(chassis)[0]
                 }
             }
-            // Only show city name in location
             statuses[idx] = MachineStatus{
+                Label:    label,
                 Hostname: inf.Hostname,
                 Status:   inf.Status,
                 Uptime:   inf.Uptime,
@@ -250,7 +249,7 @@ func fetchMachineStatus(cfg *config.Config) []MachineStatus {
                 Memory:   inf.Memory,
                 Chassis:  chassis,
             }
-        }(i, info)
+        }(i, info, cfg.Machines[i].Label)
     }
     wg.Wait()
     return statuses

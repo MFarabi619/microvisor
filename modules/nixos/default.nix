@@ -4,7 +4,13 @@
 {
   imports = [
     # flake.inputs.self.nixosModules.default
+    ./environment.nix
+    ./hardware.nix
     ./myusers.nix
+    ./networking.nix
     ./nix.nix
+    ./security.nix
+    ./systemd.nix
+    ./time.nix
   ];
 }

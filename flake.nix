@@ -12,5 +12,8 @@
     };
 
     nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi/main";
+
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+
   };
 }

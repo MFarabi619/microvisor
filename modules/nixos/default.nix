@@ -13,5 +13,6 @@
     ./security.nix
     ./systemd.nix
     ./time.nix
+    ./virtualisation.nix
   ];
 }

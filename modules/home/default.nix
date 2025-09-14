@@ -8,5 +8,6 @@
     ./me.nix
     ./nix-index.nix
     # ./nix.nix
+    ./stylix.nix
   ];
 }

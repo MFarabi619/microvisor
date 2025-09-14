@@ -128,7 +128,6 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         m.mu.Lock()
         m.machines = msg
         m.mu.Unlock()
-        // Schedule next update after 5 seconds using tea.Tick
         return m, tea.Tick(5*time.Second, func(t time.Time) tea.Msg {
             return statusMsg(fetchMachineStatus(m.cfg))
         })

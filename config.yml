@@ -18,7 +18,7 @@ machines:
   - id: 3
     label: rpi5
     username: mfarabi
-    hostname: 10.37.117.32
+    hostname: 0.1.2.3
     port: 22
     set_env:
       TERM: "xterm-kitty"
@@ -30,4 +30,18 @@ machines:
     port: 22
     set_env:
       TERM: "xterm-kitty"
+    add_keys_to_agent: true
+  - id: 5
+    label: archlinux
+    username: mfarabi
+    hostname: 10.37.97.63
+    port: 22
+    set_env:
+      TERM: "xterm-kitty"
+    add_keys_to_agent: true
+  - id: 6
+    label: macos
+    username: sacha
+    hostname: 10.37.116.22
+    port: 22
     add_keys_to_agent: true

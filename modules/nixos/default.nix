@@ -9,6 +9,7 @@
     ./environment.nix
     ./fonts.nix
     ./hardware.nix
+    ./hyprland.nix
     ./myusers.nix
     ./networking.nix
     ./nix.nix

@@ -1,8 +1,14 @@
-# lazyos
+# microvisor
 
-A TUI to manage kernel agnostic operating systems.
+A general purpose multi-kernel operating system.
 
-## Setup
+## lazyos
+
+A TUI to observe OS's on multiple machines over SSH.
+
+### Run lazyos locally
+
+#### Setup
 
 **`/config.yml`**
 
@@ -16,4 +22,10 @@ machines:
   add_keys_to_agent: `true/false`
 
 **`/.env`**
-PASSWORD\_`<id>`=`<password>`
+PASSWORD\_`<id>`=`<password>` for each machine
+
+#### Execution
+
+1. $ `go build`
+
+2. $ `./lazyos`

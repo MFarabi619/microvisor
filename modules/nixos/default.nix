@@ -10,6 +10,7 @@
     ./fonts.nix
     ./hardware.nix
     ./hyprland.nix
+    ./i18n.nix
     ./myusers.nix
     ./networking.nix
     ./nix.nix

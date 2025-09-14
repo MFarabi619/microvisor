@@ -47,6 +47,28 @@ type MachineInfo struct {
 	Chassis  string // stores output of chassis info command
 }
 
+	// StartBackgroundStatusRetry launches a goroutine to keep retrying SSH connection for inactive/offline machines
+	func StartBackgroundStatusRetry(m *MachineInfo, interval time.Duration, stopCh <-chan struct{}) {
+	       go func() {
+		       for {
+			       select {
+			       case <-stopCh:
+				       return
+			       default:
+				       if m.Status == "Online" {
+					       return
+				       }
+				       FetchStatus(m)
+				       if m.Status == "Online" {
+					       fmt.Fprintf(debugLogFile, "[INFO] Machine %d: Status changed to Online during background retry\n", m.ID)
+					       return
+				       }
+				       time.Sleep(interval)
+			       }
+		       }
+	       }()
+	}
+
 // LoadPasswordsFromEnv loads the password for a given machine ID from the environment variables
 func LoadPasswordsFromEnv(machineID int) (string, error) {
 	_ = godotenv.Load()
@@ -268,15 +290,26 @@ func FetchStatus(m *MachineInfo) {
        addr := fmt.Sprintf("%s:%d", m.Hostname, m.Port)
 
        var client *ssh.Client
-       fmt.Fprintf(debugLogFile, "[DEBUG] Machine %d: Attempting new SSH dial to %s\n", m.ID, addr)
-       client, err = ssh.Dial("tcp", addr, config)
+       maxAttempts := 3
+       backoff := 500 * time.Millisecond
+       for attempt := 1; attempt <= maxAttempts; attempt++ {
+	       fmt.Fprintf(debugLogFile, "[DEBUG] Machine %d: Attempting SSH dial to %s (attempt %d/%d)\n", m.ID, addr, attempt, maxAttempts)
+	       client, err = ssh.Dial("tcp", addr, config)
+	       if err == nil {
+		       break
+	       }
+	       if attempt < maxAttempts {
+		       time.Sleep(backoff)
+		       backoff *= 2
+	       }
+       }
        if err != nil {
 	       if m.Status == "" {
 		       m.Status = "Inactive"
 	       } else {
 		       m.Status = "Offline"
 	       }
-	       fmt.Fprintf(debugLogFile, "[DEBUG] Machine %d: SSH dial failed, status=%s, err=%v\n", m.ID, m.Status, err)
+	       fmt.Fprintf(debugLogFile, "[DEBUG] Machine %d: SSH dial failed after %d attempts, status=%s, err=%v\n", m.ID, maxAttempts, m.Status, err)
 	       return
        }
        connCache.Lock()

@@ -13,6 +13,10 @@
     go.enable = true;
     nix.enable = true;
     shell.enable = true;
+    javascript = {
+      enable = true;
+      pnpm.enable = true;
+    };
   };
 
   scripts = {

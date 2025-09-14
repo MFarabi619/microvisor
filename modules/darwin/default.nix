@@ -6,5 +6,6 @@
     ./documentation.nix
     ./environment.nix
     ./homebrew.nix
+    ./networking.nix
   ];
 }

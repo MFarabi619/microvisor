@@ -36,8 +36,36 @@ type Model struct {
 }
 
 var (
-    titleStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("5")).Background(lipgloss.Color("8")).Padding(0, 1)
-    borderStyle = lipgloss.NewStyle().Border(lipgloss.NormalBorder()).BorderForeground(lipgloss.Color("8")).Padding(1, 2)
+    titleStyle = lipgloss.NewStyle().
+        Bold(true).
+        Foreground(lipgloss.Color("15")).
+        Background(lipgloss.Color("57")).
+        Padding(0, 2).
+        Border(lipgloss.DoubleBorder(), true).
+        BorderForeground(lipgloss.Color("57"))
+
+    borderStyle = lipgloss.NewStyle().
+        Border(lipgloss.RoundedBorder()).
+        BorderForeground(lipgloss.Color("57")).
+        Background(lipgloss.Color("236")).
+        Padding(1, 3).
+        Margin(1, 2).
+        Width(0)
+
+    selectedStyle = lipgloss.NewStyle().
+        Background(lipgloss.Color("57")).
+        Foreground(lipgloss.Color("15")).
+        Bold(true).
+        Padding(0, 0)
+
+    headerStyle = lipgloss.NewStyle().
+        Bold(true).
+        Foreground(lipgloss.Color("51")).
+        Background(lipgloss.Color("236")).
+        Padding(0, 1)
+
+    helpKeyStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("51")).Bold(true)
+    helpDescStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("15"))
 )
 
 type statusMsg []MachineStatus
@@ -115,71 +143,73 @@ func truncate(s string, max int) string {
 }
 
 func (m *Model) View() string {
-    title := titleStyle.Render(" lazyos ")
+    title := titleStyle.Render(" 🚀 lazyos ")
 
     if m.showHelp {
-        help := []struct{ key, desc string }{
-            {"q", "Quit"},
-            {"up/down", "Navigate"},
-            {"?", "Show help"},
-            {"esc", "Close help"},
+        help := []struct{ key, desc, icon string }{
+            {"q", "Quit", "❌"},
+            {"up/down", "Navigate", "⬆️⬇️"},
+            {"?", "Show help", "❓"},
+            {"esc", "Close help", "🔙"},
         }
         var helpRows []string
-        helpRows = append(helpRows, lipgloss.NewStyle().Bold(true).Underline(true).Render("Help Menu"))
+        helpRows = append(helpRows, lipgloss.NewStyle().Bold(true).Underline(true).Foreground(lipgloss.Color("51")).Render("🆘 Help Menu"))
         for _, h := range help {
-            helpRows = append(helpRows, fmt.Sprintf("%-10s %s", h.key, h.desc))
+            helpRows = append(helpRows,
+                fmt.Sprintf("%s %s %s", helpKeyStyle.Render(h.icon), helpKeyStyle.Render(h.key), helpDescStyle.Render(h.desc)),
+            )
         }
-        helpContent := lipgloss.JoinVertical(lipgloss.Top, helpRows...)
-        return borderStyle.Width(m.width).Height(m.height).Render(helpContent)
+    helpContent := lipgloss.JoinVertical(lipgloss.Top, helpRows...)
+    return borderStyle.Width(m.width-2).Height(m.height-2).Render(helpContent)
     }
 
-    colWidths := []int{15, 10, 15, 15, 15, 10, 10, 10, 10}
-    headers := []string{"Hostname", "Chassis", "OS", "Kernel", "CPU", "Memory", "Uptime", "Location", "Status"}
-    for i, h := range headers {
-        headers[i] = truncate(h, colWidths[i])
-    }
-    headerFields := make([]string, len(headers))
-    for i, h := range headers {
-        headerFields[i] = truncate(h, colWidths[i])
-    }
-    header := fmt.Sprintf("%-15s %-10s %-15s %-15s %-15s %-10s %-10s %-10s %-10s",
-        headerFields[0], headerFields[1], headerFields[2], headerFields[3], headerFields[4], headerFields[5], headerFields[6], headerFields[7], headerFields[8])
+    colWidths := []int{18, 10, 15, 15, 15, 13, 10, 10, 10} // Increased Hostname and Memory widths
+    headers := []string{
+        "🏷️ Hostname", "🏠 Chassis", "🖥️ OS", "🧬 Kernel", "🧠 CPU", "💾 Memory", "⏳ Uptime", "📍 Location", "Status"}
+    // Do not truncate headers with icons
+    header := headerStyle.Render(fmt.Sprintf("%-18s %-10s %-15s %-15s %-15s %-13s %-10s %-10s %-10s",
+        headers[0], headers[1], headers[2], headers[3], headers[4], headers[5], headers[6], headers[7], headers[8]))
 
     var rows []string
-    rows = append(rows, lipgloss.NewStyle().Bold(true).Underline(true).Render(header))
+    rows = append(rows, header)
     for i, os := range m.machines {
-        var statusColor lipgloss.Style
+        var statusIcon, statusColor string
         switch os.Status {
         case "Online":
-            statusColor = lipgloss.NewStyle().Foreground(lipgloss.Color("2")) // Green
+            statusIcon = "🟢"
+            statusColor = "2"
         case "Offline":
-            statusColor = lipgloss.NewStyle().Foreground(lipgloss.Color("1")) // Red
+            statusIcon = "🔴"
+            statusColor = "1"
         default:
-            statusColor = lipgloss.NewStyle().Foreground(lipgloss.Color("8")) // Gray
+            statusIcon = "⚪️"
+            statusColor = "8"
         }
-    fields := make([]string, len(colWidths))
-    fields[0] = pad(truncate(os.Hostname, colWidths[0]), colWidths[0])
-    fields[1] = pad(truncate(trim(firstLine(os.Chassis)), colWidths[1]), colWidths[1])
-    fields[2] = pad(truncate(os.OS, colWidths[2]), colWidths[2])
-    fields[3] = pad(truncate(os.Kernel, colWidths[3]), colWidths[3])
-    fields[4] = pad(truncate(firstLine(os.CPU), colWidths[4]), colWidths[4])
-    fields[5] = pad(truncate(firstLine(os.Memory), colWidths[5]), colWidths[5])
-    fields[6] = pad(truncate(os.Uptime, colWidths[6]), colWidths[6])
-    fields[7] = pad(truncate(os.Location, colWidths[7]), colWidths[7])
-    fields[8] = pad(truncate(os.Status, colWidths[8]), colWidths[8])
-    row := strings.Join(fields, " ")
-        row = statusColor.Render(row)
+        fields := make([]string, len(colWidths))
+        fields[0] = pad(truncate(os.Hostname, colWidths[0]), colWidths[0])
+        fields[1] = pad(truncate(trim(firstLine(os.Chassis)), colWidths[1]), colWidths[1])
+        fields[2] = pad(truncate(os.OS, colWidths[2]), colWidths[2])
+        fields[3] = pad(truncate(os.Kernel, colWidths[3]), colWidths[3])
+        fields[4] = pad(truncate(firstLine(os.CPU), colWidths[4]), colWidths[4])
+        fields[5] = pad(truncate(firstLine(os.Memory), colWidths[5]), colWidths[5])
+        fields[6] = pad(truncate(os.Uptime, colWidths[6]), colWidths[6])
+        fields[7] = pad(truncate(os.Location, colWidths[7]), colWidths[7])
+        // Do not pad the last column
+        fields[8] = truncate(os.Status, colWidths[8])
+        row := fmt.Sprintf("%s %s", statusIcon, strings.Join(fields, " "))
+        row = strings.TrimRight(row, " ")
+        styledRow := lipgloss.NewStyle().Foreground(lipgloss.Color(statusColor)).Render(row)
         if i == m.selected {
-            row = lipgloss.NewStyle().Background(lipgloss.Color("7")).Foreground(lipgloss.Color("0")).Render(row)
+            styledRow = selectedStyle.Render(row)
         }
-        rows = append(rows, row)
+        rows = append(rows, styledRow)
     }
     body := lipgloss.JoinVertical(lipgloss.Top, rows...)
     content := lipgloss.JoinVertical(lipgloss.Top, title, "", body)
 
     border := borderStyle.
-        Width(m.width).
-        Height(m.height).
+        Width(m.width-2).
+        Height(m.height-2).
         Render(content)
 
     return border

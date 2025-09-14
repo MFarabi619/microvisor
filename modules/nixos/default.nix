@@ -7,6 +7,7 @@
     ./services
     ./console.nix
     ./environment.nix
+    ./fonts.nix
     ./hardware.nix
     ./myusers.nix
     ./networking.nix

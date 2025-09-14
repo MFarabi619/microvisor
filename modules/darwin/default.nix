@@ -5,5 +5,6 @@
     ./myusers.nix
     ./documentation.nix
     ./environment.nix
+    ./homebrew.nix
   ];
 }

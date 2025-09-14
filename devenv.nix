@@ -10,8 +10,9 @@
   # packages = with pkgs; [ ];
 
   languages = {
-    nix.enable = true;
     go.enable = true;
+    nix.enable = true;
+    shell.enable = true;
   };
 
   scripts = {

@@ -9,8 +9,8 @@ import (
 
 	"strings"
 
+	"github.com/MFarabi619/microvisor/pkg/config"
 	"github.com/joho/godotenv"
-	"github.com/xsachax/lazyos/pkg/config"
 	"golang.org/x/crypto/ssh"
 )
 

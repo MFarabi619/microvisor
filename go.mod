@@ -1,4 +1,4 @@
-module github.com/xsachax/lazyos
+module github.com/MFarabi619/microvisor
 
 go 1.24.5
 

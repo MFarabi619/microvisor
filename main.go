@@ -7,10 +7,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/MFarabi619/microvisor/pkg/config"
+	"github.com/MFarabi619/microvisor/pkg/healthcheck"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/xsachax/lazyos/pkg/config"
-	"github.com/xsachax/lazyos/pkg/healthcheck"
 )
 
 type MachineStatus struct {

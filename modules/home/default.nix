@@ -9,5 +9,6 @@
     ./nix-index.nix
     # ./nix.nix
     ./stylix.nix
+    ./xdg.nix
   ];
 }

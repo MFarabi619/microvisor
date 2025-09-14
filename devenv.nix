@@ -10,6 +10,7 @@
   # packages = with pkgs; [ ];
 
   languages = {
+    nix.enable = true;
     go.enable = true;
   };
 
